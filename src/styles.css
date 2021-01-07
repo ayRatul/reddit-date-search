@@ -1,0 +1,10 @@
+html, body, #root, #root > div {
+  height: 100vh
+}
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+.content {
+  flex: 1 1 auto;
+}
