@@ -130,11 +130,11 @@ class MainView extends React.Component {
             type="date"
             defaultValue={this.date}
             className="form-control"
-            onChange={(event) => this.current.myRef.setDate(event.target.value)}
+            onChange={(event) => this.myRef.current.setDate(event.target.value)}
           />
           <Dropdown
             header="Sort by:"
-            onChange={(e, { value }) => this.current.myRef.setSort(value)}
+            onChange={(e, { value }) => this.myRef.current.setSort(value)}
             selection
             options={sorted}
             placeholder="Choose an option"
@@ -142,7 +142,7 @@ class MainView extends React.Component {
           />
           <Dropdown
             header="Order:"
-            onChange={(e, { value }) => this.current.myRef.setOrder(value)}
+            onChange={(e, { value }) => this.myRef.current.setOrder(value)}
             selection
             options={order}
             placeholder="Choose an option"
