@@ -64,12 +64,7 @@ class AppList extends React.Component {
   displayListPosts = () =>
     this.state.entries.map((el, i) => (
       // Maybe, there is a better key :D
-      <List.Item
-        key={el["id"]}
-        style={{ margin: 10 }}
-        href={el["full_link"]}
-        target="_blank"
-      >
+      <List.Item key={el["id"]} style={{ margin: 10 }} target="_blank">
         {el["preview"] !== undefined &&
           el["preview"]["images"] !== undefined &&
           el["preview"]["images"][0]["source"] !== undefined && (
@@ -82,7 +77,9 @@ class AppList extends React.Component {
             />
           )}
         <List.Content>
-          <List.Header as="a">{el["title"]}</List.Header>
+          <List.Header as="a" href={el["full_link"]}>
+            {el["title"]}
+          </List.Header>
           <List.Description>{el["selftext"]}</List.Description>
           <List.Description>
             {new Date(parseInt(el["created_utc"], 10) * 1000)
@@ -91,13 +88,9 @@ class AppList extends React.Component {
               .replace("T", " ")}{" "}
             • [
             <a href={"https://www.reddit.com/user/" + el["author"]}>
-              <b>{el["author"]}</b>
+              {el["author"]}
             </a>
-            ] • [
-            <a href={el["url"]}>
-              <b>{el["domain"]}</b>
-            </a>
-            ]
+            ] • [<a href={el["url"]}>{el["domain"]}</a>]
           </List.Description>
         </List.Content>
       </List.Item>
@@ -113,72 +106,79 @@ class AppList extends React.Component {
   }
 }
 
-export default function App() {
-  var curr = new Date();
-  curr.setDate(curr.getDate() - 1);
-  var date = curr.toISOString().substr(0, 10);
-  this.child = React.createRef();
-  return (
-    <div className="App">
-      <h5 style={{ margin: 20 }}>Search by date:</h5>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gridGap: 20,
-          margin: 20
-        }}
-      >
-        <input
-          type="date"
-          defaultValue={date}
-          className="form-control"
-          onChange={(event) => this.child.setDate(event.target.value)}
-        />
-        <Dropdown
-          header="Sort by:"
-          onChange={(e, { value }) => this.child.setSort(value)}
-          selection
-          options={sorted}
-          placeholder="Choose an option"
-          defaultValue={sorted[0].value}
-        />
-        <Dropdown
-          header="Order:"
-          onChange={(e, { value }) => this.child.setOrder(value)}
-          selection
-          options={order}
-          placeholder="Choose an option"
-          defaultValue={order[0].value}
-        />
-      </div>
-      <h5>Subreddit: (Ex: music)</h5>
-      <div className="input-group">
-        <input
-          type="text"
-          placeholder="Subreddit"
-          onChange={(event) => this.child.setSubreddit(event.target.value)}
-        />
-        <button
-          onClick={() => this.child.search()}
-          className="input-group-addon"
-        >
-          Search
-        </button>
-      </div>
-      <div
-        className="content"
-        style={{
-          width: "100%",
-          height: "100%"
-        }}
-      >
-        <AppList
-          ref={(instance) => {
-            this.child = instance;
+class MainView extends React.Component {
+  constructor(props) {
+    super(props);
+    var curr = new Date();
+    curr.setDate(curr.getDate() - 1);
+    this.date = curr.toISOString().substr(0, 10);
+    this.myRef = React.createRef();
+  }
+  render() {
+    return (
+      <div className="App">
+        <h5 style={{ margin: 20 }}>Search by date:</h5>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gridGap: 20,
+            margin: 20
           }}
-        />
+        >
+          <input
+            type="date"
+            defaultValue={this.date}
+            className="form-control"
+            onChange={(event) => this.current.myRef.setDate(event.target.value)}
+          />
+          <Dropdown
+            header="Sort by:"
+            onChange={(e, { value }) => this.current.myRef.setSort(value)}
+            selection
+            options={sorted}
+            placeholder="Choose an option"
+            defaultValue={sorted[0].value}
+          />
+          <Dropdown
+            header="Order:"
+            onChange={(e, { value }) => this.current.myRef.setOrder(value)}
+            selection
+            options={order}
+            placeholder="Choose an option"
+            defaultValue={order[0].value}
+          />
+        </div>
+        <h5>Subreddit: (Ex: music)</h5>
+        <div className="input-group">
+          <input
+            type="text"
+            placeholder="Subreddit"
+            onChange={(event) =>
+              this.myRef.current.setSubreddit(event.target.value)
+            }
+          />
+          <button
+            onClick={() => this.myRef.current.search()}
+            className="input-group-addon"
+          >
+            Search
+          </button>
+        </div>
+        <div
+          className="content"
+          style={{
+            width: "100%",
+            height: "100%"
+          }}
+        >
+          <AppList ref={this.myRef} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+}
+
+export default function App() {
+  return <MainView />;
 }
