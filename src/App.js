@@ -95,7 +95,7 @@ class AppList extends React.Component {
             as="a"
             href={el["full_link"]}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             {el["title"]}
           </List.Header>
@@ -108,13 +108,13 @@ class AppList extends React.Component {
             • [
             <a
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               href={"https://www.reddit.com/user/" + el["author"]}
             >
               {el["author"]}
             </a>
             ] • [
-            <a target="_blank" rel="noreferrer" href={el["url"]}>
+            <a target="_blank" rel="noopener noreferrer" href={el["url"]}>
               {el["domain"]}
             </a>
             ]
