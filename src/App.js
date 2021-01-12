@@ -26,6 +26,7 @@ class AppList extends React.Component {
 
   setOrder = (value) => (this._order = value);
   setSort = (value) => (this._sorted = value);
+  setDate = (value) => (this._date = new Date(value));
   setSubreddit = (value) => (this._subreddit = value);
   fixDate() {
     var newDate = new Date(this._date.getTime());
@@ -82,7 +83,7 @@ class AppList extends React.Component {
           el["preview"]["images"] !== undefined &&
           el["preview"]["images"][0]["source"] !== undefined && (
             <Image
-              style={{ height: "60px" }}
+              size="tiny"
               src={el["preview"]["images"][0]["source"]["url"].replace(
                 "amp;s",
                 "s"
@@ -90,7 +91,12 @@ class AppList extends React.Component {
             />
           )}
         <List.Content>
-          <List.Header as="a" href={el["full_link"]}>
+          <List.Header
+            as="a"
+            href={el["full_link"]}
+            target="_blank"
+            rel="noreferrer"
+          >
             {el["title"]}
           </List.Header>
           <List.Description>{el["selftext"]}</List.Description>
@@ -100,10 +106,18 @@ class AppList extends React.Component {
               .substr(0, 16)
               .replace("T", " ")}{" "}
             • [
-            <a href={"https://www.reddit.com/user/" + el["author"]}>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={"https://www.reddit.com/user/" + el["author"]}
+            >
               {el["author"]}
             </a>
-            ] • [<a href={el["url"]}>{el["domain"]}</a>]
+            ] • [
+            <a target="_blank" rel="noreferrer" href={el["url"]}>
+              {el["domain"]}
+            </a>
+            ]
           </List.Description>
         </List.Content>
       </List.Item>
