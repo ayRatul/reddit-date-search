@@ -1,6 +1,7 @@
 import React from "react";
 import "./styles.css";
 import { Dropdown, List, Image, Loader } from "semantic-ui-react";
+import ls from "local-storage";
 const sorted = [
   { key: 1, text: "Score", value: "score" },
   { key: 2, text: "Comments", value: "num_comments" },
@@ -12,18 +13,22 @@ const order = [
 ];
 class AppList extends React.Component {
   state = {
-    entries: [],
+    entries: null,
     loading: false
   };
   _order = order[0].value;
   _sorted = sorted[0].value;
-  _subreddit = "music";
-  _date = new Date();
+  componentDidMount() {
+    var _d = ls.get("date");
+    this._date = _d != null ? new Date(ls.get("date")) : new Date();
+    this._subreddit = ls.get("subreddit") || "music";
+  }
+
   setOrder = (value) => (this._order = value);
   setSort = (value) => (this._sorted = value);
   setSubreddit = (value) => (this._subreddit = value);
-  setDate(value) {
-    var newDate = new Date(value);
+  fixDate() {
+    var newDate = new Date(this._date.getTime());
     var currentDate = new Date();
     currentDate.setDate(currentDate.getDate() - 1);
     if (newDate > currentDate) {
@@ -32,11 +37,16 @@ class AppList extends React.Component {
     this._date = newDate;
   }
   search() {
-    this.setDate(this._date.getTime());
+    this.setState({
+      loading: true
+    });
+    this.fixDate();
     var nextDay = new Date(this._date.getTime());
     nextDay.setDate(nextDay.getDate() + 1);
     var __date = (this._date.getTime() / 1000).toFixed(0);
     var __nexDate = (nextDay.getTime() / 1000).toFixed(0);
+    ls.set("date", this._date.toISOString().substr(0, 10));
+    ls.set("subreddit", this._subreddit);
     var link =
       "https://api.pushshift.io/reddit/submission/search/?after=" +
       __date +
@@ -48,10 +58,7 @@ class AppList extends React.Component {
       this._order +
       "&size=100&subreddit=" +
       this._subreddit;
-    console.log(link);
-    this.setState({
-      loading: true
-    });
+
     fetch(link)
       .then((response) => response.json())
       .then((data) =>
@@ -59,7 +66,13 @@ class AppList extends React.Component {
           loading: false,
           entries: data["data"]
         })
-      );
+      )
+      .catch((error) => {
+        this.setState({
+          loading: false,
+          entries: []
+        });
+      });
   }
   displayListPosts = () =>
     this.state.entries.map((el, i) => (
@@ -98,10 +111,14 @@ class AppList extends React.Component {
   render() {
     return this.state.loading ? (
       <Loader active inline="centered" />
-    ) : (
+    ) : this.state.entries == null ? (
+      <h4>Click search to start</h4>
+    ) : this.state.entries.length !== 0 ? (
       <List animated celled verticalAlign="middle" align="start">
         {this.displayListPosts()}
       </List>
+    ) : (
+      <h4>No posts available</h4>
     );
   }
 }
@@ -109,9 +126,10 @@ class AppList extends React.Component {
 class MainView extends React.Component {
   constructor(props) {
     super(props);
+    // ls.clear()
     var curr = new Date();
     curr.setDate(curr.getDate() - 1);
-    this.date = curr.toISOString().substr(0, 10);
+    this.date = ls.get("date") || curr.toISOString().substr(0, 10);
     this.myRef = React.createRef();
   }
   render() {
@@ -151,9 +169,11 @@ class MainView extends React.Component {
         </div>
         <h5>Subreddit: (Ex: music)</h5>
         <div className="input-group">
+          r/ :
           <input
             type="text"
             placeholder="Subreddit"
+            defaultValue={ls.get("subreddit") || "music"}
             onChange={(event) =>
               this.myRef.current.setSubreddit(event.target.value)
             }

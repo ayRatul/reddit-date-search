@@ -1,13 +1,11 @@
 {
-  "name": "react",
+  "name": "reddit-date-search",
   "version": "1.0.0",
-  "description": "React example starter project",
-  "keywords": [
-    "react",
-    "starter"
-  ],
+  "description": "simple utility, if you want to contribute do it at https://github.com/ayRatul/reddit-date-search",
+  "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "local-storage": "2.0.0",
     "react": "17.0.0",
     "react-dom": "17.0.0",
     "react-scripts": "3.4.3",
